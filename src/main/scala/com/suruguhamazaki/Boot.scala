@@ -10,21 +10,16 @@ object Boot extends App {
 
   implicit val system = ActorSystem("on-spray-can")
 
-  system.actorOf(Props(new Actor with ActorLogging {
+  implicit val service = system.actorOf(Props[MyService])
 
-    IO(Http) ! Http.Bind(self, interface = "localhost", port = 8080)
+  IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
+}
 
-    def receive: Receive = {
-      case _: Http.Bound ⇒ log.info(s"${self.path.name} started.")
-      case Http.Connected(remote, local) ⇒
-        log.info(s"Connected from $remote to $local")
-        sender ! Http.Register(self)
-      case req: HttpRequest ⇒
-        log.info(s"Request received: $req")
-        sender ! HttpResponse(entity = "Hello")
-      case _: Http.ConnectionClosed ⇒
-        log.info("Connetcion closed.")
-    }
-  }))
+class MyService extends HttpServiceActor with ActorLogging {
 
+  def receive: Receive = runRoute(route).orElse {
+    case _: Http.Bound ⇒
+  }
+  def route: Route =
+    complete("Hello")
 }
