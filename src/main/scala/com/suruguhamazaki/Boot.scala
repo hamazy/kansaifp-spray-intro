@@ -21,5 +21,24 @@ class MyService extends HttpServiceActor with ActorLogging {
     case _: Http.Bound ⇒
   }
   def route: Route =
-    complete("Hello")
+    path("foo") {
+      get {
+        complete("Receive GET /foo")
+      } ~ post {
+        complete("Receive POST /foo")
+      }
+    } ~ path("bar") {
+      get {
+        complete("Receive GET /bar")
+      } ~ post {
+        complete("Receive POST /bar")
+      }
+    } ~ path("color") {
+      parameters('r.as[Int], 'g.as[Int], 'b.as[Int]) { (r, g, b) ⇒
+        complete(
+          <p style={
+            s"color: rgb($r, $g, $b)"
+          }>Hello</p>)
+      }
+    }
 }
