@@ -15,6 +15,8 @@ object Boot extends App {
   IO(Http) ! Http.Bind(service, interface = "localhost", port = 8080)
 }
 
+case class Color(r: Int, g: Int, b: Int)
+
 class MyService extends HttpServiceActor with ActorLogging {
 
   def receive: Receive = runRoute(route).orElse {
@@ -34,10 +36,10 @@ class MyService extends HttpServiceActor with ActorLogging {
         complete("Receive POST /bar")
       }
     } ~ path("color") {
-      parameters('r.as[Int], 'g.as[Int], 'b.as[Int]) { (r, g, b) ⇒
+      parameters('r.as[Int], 'g.as[Int], 'b.as[Int]).as(Color) { color ⇒
         complete(
           <p style={
-            s"color: rgb($r, $g, $b)"
+            s"color: rgb(${color.r}, ${color.g}, ${color.b})"
           }>Hello</p>)
       }
     }
