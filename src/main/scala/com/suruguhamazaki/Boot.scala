@@ -27,13 +27,13 @@ class MyService extends HttpServiceActor with ActorLogging {
       get {
         complete("Receive GET /foo")
       } ~ post {
-        complete("Receive POST /foo")
+        complete(StatusCodes.OK)
       }
     } ~ path("bar") {
       get {
-        complete("Receive GET /bar")
+        complete(<p style="font-size:xx-large;">Receive GET /bar</p>)
       } ~ post {
-        complete("Receive POST /bar")
+        complete(HttpResponse(entity = "Receive POST /bar"))
       }
     } ~ path("color") {
       parameters('r.as[Int], 'g.as[Int], 'b.as[Int]).as(Color) { color ⇒
